@@ -28,7 +28,14 @@
       "Bash(echo \"EXIT: $?\")",
       "Bash(npm run *)",
       "Bash(echo \"BUILD EXIT CODE: $?\")",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(git fetch *)",
+      "Bash(git stash *)",
+      "Bash(grep -viE \"node_modules|^d.*\\\\.\\(git|claude\\)$|package|tsconfig|vite|index.html|README|\\\\.gitignore\")",
+      "Bash(node -e \"console.log\\(require\\('./package.json'\\).dependencies\\)\")",
+      "Bash(cat)",
+      "Bash(node /tmp/check.mjs)",
+      "Bash(echo \"BUILD EXIT: $?\")"
     ]
   }
 }

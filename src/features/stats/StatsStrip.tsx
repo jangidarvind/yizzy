@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import type { Dataset, Station } from '../../lib/data/types';
+import { VEHICLE_LABELS } from '../../lib/data/types';
 import { isFilterActive, useStore } from '../../lib/store';
+import { VEHICLE_COLORS } from '../../lib/theme';
 
 interface Props {
   dataset: Dataset;
@@ -25,40 +27,35 @@ export function StatsStrip({ dataset, visible }: Props) {
 
   const live = useMemo(() => {
     const operators = new Set(visible.map((s) => s.operator));
-    const cities = new Set(visible.map((s) => s.city));
     const areas = new Set(visible.map((s) => s.areaGroup));
-    const verified = visible.filter((s) => s.confidence === 'High').length;
-    return { operators: operators.size, cities: cities.size, areas: areas.size, verified };
+    const byTag = { '2W': 0, '3W': 0, '4W': 0 };
+    for (const s of visible) for (const t of s.vehicleTags) byTag[t] += 1;
+    return { operators: operators.size, areas: areas.size, byTag };
   }, [visible]);
 
   const totals = dataset.meta.totals;
-  const flagged = Object.values(dataset.meta.flagCounts).reduce((a, b) => a + b, 0);
 
   return (
     <header className="topbar">
-      <div className="topbar__brand">
-        <BrandMark />
-        <div className="topbar__brandtext">
-          <strong>Yizzy</strong>
-          <span>EV Infrastructure Intelligence</span>
-        </div>
-      </div>
-
       <div className="topbar__stats">
-        <Stat
-          value={live.operators} total={totals.operators} filtered={filtered}
-          label="Operators unified" accent
-        />
-        <Stat value={visible.length} total={totals.stations} filtered={filtered} label="Stations" />
+        <Stat value={visible.length} total={totals.stations} filtered={filtered} label="Stations shown" accent />
+        <Stat value={live.operators} total={totals.operators} filtered={filtered} label="Operators" />
         <Stat value={live.areas} total={totals.areas} filtered={filtered} label="Localities" />
-        <Stat value={live.cities} total={totals.cities} filtered={filtered} label="Cities" />
-        <div className="topbar__stat topbar__stat--verify">
-          <div className="topbar__value">{live.verified}</div>
-          <div className="topbar__label">
-            High-confidence
-            <span className="topbar__sub">{flagged} flagged on the ground</span>
-          </div>
+
+        <div className="topbar__tags">
+          {(['2W', '3W', '4W'] as const).map((t) => (
+            <div className="topbar__tag" key={t}>
+              <span className="dot" style={{ background: VEHICLE_COLORS[t] }} />
+              <span className="topbar__tagval">{live.byTag[t]}</span>
+              <span className="topbar__taglbl">{VEHICLE_LABELS[t]}</span>
+            </div>
+          ))}
         </div>
+
+        <p className="topbar__insight">
+          2-wheeler and 4-wheeler coverage is markedly denser than auto-specific
+          charging — 3W remains the real infrastructure gap.
+        </p>
       </div>
 
       <div className="topbar__view" role="tablist" aria-label="View mode">
@@ -101,21 +98,6 @@ function Stat({ value, total, filtered, label, accent }: {
       </div>
       <div className="topbar__label">{label}</div>
     </div>
-  );
-}
-
-function BrandMark() {
-  return (
-    <svg viewBox="0 0 28 28" width="30" height="30" aria-hidden="true" className="brandmark">
-      <rect x="1" y="1" width="26" height="26" rx="8" fill="url(#bg)" />
-      <path d="M15.5 6 L9 15.5 H13.5 L12.5 22 L19 12.5 H14.5 Z" fill="#04120C" />
-      <defs>
-        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#00E08F" />
-          <stop offset="1" stopColor="#00B4E0" />
-        </linearGradient>
-      </defs>
-    </svg>
   );
 }
 

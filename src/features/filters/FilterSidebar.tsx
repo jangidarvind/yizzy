@@ -17,6 +17,8 @@ export function FilterSidebar({ dataset, visibleCount }: Props) {
   const clearFilters = useStore((s) => s.clearFilters);
   const sidebarOpen = useStore((s) => s.sidebarOpen);
   const setSidebarOpen = useStore((s) => s.setSidebarOpen);
+  const hideRestricted = useStore((s) => s.hideRestricted);
+  const setHideRestricted = useStore((s) => s.setHideRestricted);
 
   const stations = dataset.stations;
   const opColors = useMemo(() => operatorColorMap(dataset.meta.operatorCounts), [dataset.meta]);
@@ -74,6 +76,23 @@ export function FilterSidebar({ dataset, visibleCount }: Props) {
             <button className="sidebar__reset" onClick={clearFilters}>Reset all</button>
           )}
         </div>
+
+        <label className="sidebar__switch">
+          <input
+            type="checkbox"
+            checked={hideRestricted}
+            onChange={(e) => setHideRestricted(e.target.checked)}
+          />
+          <span className="sidebar__switchbox" aria-hidden="true">
+            <svg viewBox="0 0 12 12"><path d="M2.5 6.2 L4.8 8.5 L9.5 3.5"
+              fill="none" stroke="currentColor" strokeWidth="1.8"
+              strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </span>
+          <span>
+            Hide restricted &amp; non-functional
+            <em>Drops sites our field data flags as closed, residents-only or reported down</em>
+          </span>
+        </label>
 
         <div className="sidebar__scroll">
           <FacetGroup

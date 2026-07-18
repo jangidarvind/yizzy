@@ -60,6 +60,8 @@ interface AppState {
   viewMode: ViewMode;
   theme: Theme;
   mapStyle: MapStyle;
+  /** Hide stations flagged restricted / non-functional / access-denied. */
+  hideRestricted: boolean;
   selectedId: string | null;
   selectedZoneId: string | null;
   hoveredId: string | null;
@@ -73,6 +75,7 @@ interface AppState {
   setTheme: (t: Theme) => void;
   toggleTheme: () => void;
   setMapStyle: (s: MapStyle) => void;
+  setHideRestricted: (v: boolean) => void;
   select: (id: string | null) => void;
   selectZone: (id: string | null) => void;
   hover: (id: string | null) => void;
@@ -133,6 +136,7 @@ export const useStore = create<AppState>((set, get) => {
     viewMode: 'map',
     theme: readTheme(),
     mapStyle: 'roadmap',
+    hideRestricted: false,
     selectedId: null,
     selectedZoneId: null,
     hoveredId: null,
@@ -158,6 +162,7 @@ export const useStore = create<AppState>((set, get) => {
     },
     toggleTheme: () => get().setTheme(get().theme === 'light' ? 'dark' : 'light'),
     setMapStyle: (mapStyle) => { set({ mapStyle }); sync(); },
+    setHideRestricted: (hideRestricted) => set({ hideRestricted }),
     // Selecting a zone and a station are mutually exclusive right-panel states.
     select: (selectedId) => { set({ selectedId, selectedZoneId: null }); sync(); },
     selectZone: (selectedZoneId) => { set({ selectedZoneId, selectedId: null }); sync(); },

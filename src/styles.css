@@ -1,59 +1,56 @@
 /* ==========================================================================
-   Yizzy — EV Infrastructure Intelligence
+   Yizzy — Charging Infra Map (Tab 2)
 
-   Dark base: the product is a map, and dark cartography lets the marker hues
-   carry the data rather than competing with a bright basemap. It also holds up
-   in the low-light rooms these get demoed in.
+   Scoped to the map route. Palette is the Yizzy brand (asphalt / paper /
+   marigold / teal / coral); the light and dark map skins are hand-tuned rather
+   than inverted, because marker hues have to stay legible on either basemap.
+
+   NOTE: nothing here may set global `body` rules — the landing page shares this
+   document and must stay scrollable.
    ========================================================================== */
 
-/* Light is the default theme (per spec). Both palettes are hand-tuned — the dark
-   set is not an inversion of the light one. `--overlay*` are the frosted-glass
-   backgrounds for panels floating over the map; they differ per theme so text
-   stays legible against either basemap. */
 :root,
-:root[data-theme='light'] {
-  --bg: #EEF1F5;
+:root[data-map-theme='light'] {
+  --bg: #F2EDE1;
   --surface: #FFFFFF;
-  --surface-2: #F5F8FB;
-  --surface-3: #E9EEF3;
-  --border: #D5DEE7;
-  --border-soft: #E4EAF0;
-  --text: #0F1D2A;
-  --text-dim: #47586A;
-  --text-mute: #79899A;
-  --accent: #00A86B;
-  --accent-dim: #00875A;
-  --danger: #E0392B;
+  --surface-2: #FBF8F1;
+  --surface-3: #E9E3D4;
+  --border: #D6CFBE;
+  --border-soft: #E4DDCC;
+  --text: #181A20;
+  --text-dim: #4A4C55;
+  --text-mute: #726F65;
+  --accent: #12967A;
+  --accent-dim: #0E7A63;
+  --danger: #D94F30;
 
-  --overlay: rgba(255, 255, 255, 0.9);
-  --overlay-strong: rgba(255, 255, 255, 0.96);
-  --overlay-border: rgba(180, 195, 208, 0.6);
-  --overlay-inset: #F2F5F8;
+  --overlay: rgba(255, 253, 248, 0.92);
+  --overlay-strong: rgba(255, 253, 248, 0.97);
+  --overlay-border: rgba(190, 180, 158, 0.7);
+  --overlay-inset: #F2EDE1;
 
-  --shadow: 0 6px 26px rgba(15, 29, 42, 0.12);
-  --shadow-lg: 0 18px 50px rgba(15, 29, 42, 0.2);
-
-  color-scheme: light;
+  --shadow: 0 6px 26px rgba(24, 26, 32, 0.12);
+  --shadow-lg: 0 18px 50px rgba(24, 26, 32, 0.2);
 }
 
-:root[data-theme='dark'] {
-  --bg: #080B0F;
-  --surface: #0E141B;
-  --surface-2: #131B24;
-  --surface-3: #1A242F;
-  --border: #202C39;
-  --border-soft: #18222C;
-  --text: #E6EDF3;
-  --text-dim: #93A1B0;
-  --text-mute: #66788A;
-  --accent: #00E08F;
-  --accent-dim: #00A868;
-  --danger: #FF6B57;
+:root[data-map-theme='dark'] {
+  --bg: #131519;
+  --surface: #181A20;
+  --surface-2: #22252E;
+  --surface-3: #2E323D;
+  --border: #343846;
+  --border-soft: #272A34;
+  --text: #F2EDE1;
+  --text-dim: #B6B3A9;
+  --text-mute: #8A8779;
+  --accent: #23C69F;
+  --accent-dim: #12967A;
+  --danger: #F0704F;
 
-  --overlay: rgba(14, 20, 27, 0.92);
-  --overlay-strong: rgba(14, 20, 27, 0.96);
-  --overlay-border: #202C39;
-  --overlay-inset: #080B0F;
+  --overlay: rgba(24, 26, 32, 0.93);
+  --overlay-strong: rgba(24, 26, 32, 0.97);
+  --overlay-border: #343846;
+  --overlay-inset: #131519;
 
   --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.65);
@@ -69,33 +66,13 @@
   --sidebar-w: 316px;
   --panel-w: 384px;
 
-  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-* { box-sizing: border-box; }
-
-html, body, #root { height: 100%; margin: 0; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 14px;
-  line-height: 1.45;
-  -webkit-font-smoothing: antialiased;
-  overflow: hidden;
-}
-
-button { font: inherit; color: inherit; cursor: pointer; }
-h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
 
 ::-webkit-scrollbar { width: 9px; height: 9px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 9px; }
-::-webkit-scrollbar-thumb:hover { background: #24313F; }
-
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border); }
 
 .dot {
   width: 8px; height: 8px; border-radius: 50%;
@@ -129,9 +106,21 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
 
 /* --- Shell --------------------------------------------------------------- */
 
-.app { height: 100%; display: flex; flex-direction: column; }
+/* The map fills the viewport below the shared site header. Overflow is clipped
+   here rather than on <body>, so the landing route still scrolls. */
+.app {
+  height: calc(100vh - var(--header-h));
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.45;
+}
 .app__body { flex: 1; position: relative; min-height: 0; }
 .app__map { position: absolute; inset: 0; }
+
+.boot { height: calc(100vh - var(--header-h)); background: var(--bg); }
 
 /* --- Top bar ------------------------------------------------------------- */
 
@@ -145,23 +134,43 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
   z-index: 40;
 }
 
-.topbar__brand { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
-.brandmark { filter: drop-shadow(0 2px 10px rgba(0, 224, 143, 0.28)); }
-.topbar__brandtext { display: flex; flex-direction: column; line-height: 1.2; }
-.topbar__brandtext strong { font-size: 15px; letter-spacing: -0.02em; }
-.topbar__brandtext span { font-size: 10.5px; color: var(--text-mute); letter-spacing: 0.02em; }
-
 .topbar__stats {
-  display: flex; align-items: center; gap: 30px;
-  flex: 1; min-width: 0; overflow: hidden;
-  padding-left: 8px;
-  border-left: 1px solid var(--border-soft);
+  display: flex; align-items: center; gap: 26px;
+  flex: 1; min-width: 0;
+  /* Scrolls rather than clipping — the vehicle breakdown is part of the
+     required summary row, so it must never be cut off. */
+  overflow-x: auto; overflow-y: hidden;
+  scrollbar-width: none;
 }
+.topbar__stats::-webkit-scrollbar { display: none; }
 .topbar__stat { flex: 0 0 auto; }
 .topbar__value {
-  font-size: 20px; font-weight: 650; letter-spacing: -0.03em;
+  font-family: var(--font-mono);
+  font-size: 20px; font-weight: 600; letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums; line-height: 1.1;
 }
+
+/* Vehicle-coverage breakdown + the dataset's headline insight. */
+.topbar__tags {
+  display: flex; gap: 14px; flex: 0 0 auto;
+  padding-left: 26px; padding-right: 4px;
+  border-left: 1px solid var(--border-soft);
+}
+.topbar__tag { display: flex; align-items: center; gap: 6px; }
+.topbar__tagval {
+  font-family: var(--font-mono); font-size: 14px; font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.topbar__taglbl { font-size: 11.5px; color: var(--text-mute); }
+.topbar__insight {
+  flex: 1 1 240px; min-width: 0;
+  font-size: 11.5px; line-height: 1.4; color: var(--text-mute);
+  padding-left: 26px; border-left: 1px solid var(--border-soft);
+}
+@media (max-width: 1240px) { .topbar__insight { display: none; } }
+/* Drop the lowest-priority stat (Localities) before the strip gets crowded —
+   station count, operator count and the vehicle split are the ones that matter. */
+@media (max-width: 1100px) { .topbar__stats > .topbar__stat:nth-child(3) { display: none; } }
 .topbar__stat.is-accent .topbar__value { color: var(--accent); }
 .topbar__oftotal {
   font-size: 12px; font-weight: 500; color: var(--text-mute); margin-left: 4px;
@@ -493,6 +502,35 @@ h1, h2, h3, h4 { margin: 0; font-weight: 600; letter-spacing: -0.01em; }
   transition: color 0.16s, background 0.16s;
 }
 .sidebar__reset:hover { color: var(--danger); background: rgba(255, 107, 87, 0.1); }
+
+/* Hide restricted / non-functional — an explicit opt-in, since silently
+   dropping flagged sites would overstate real coverage. */
+.sidebar__switch {
+  display: flex; align-items: flex-start; gap: 8px;
+  margin: 0 13px 6px; padding: 9px 10px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface-2);
+  cursor: pointer; font-size: 12.5px;
+  transition: border-color 0.16s;
+}
+.sidebar__switch:hover { border-color: var(--accent-dim); }
+.sidebar__switch input { position: absolute; opacity: 0; pointer-events: none; }
+.sidebar__switchbox {
+  width: 15px; height: 15px; flex: 0 0 auto; margin-top: 1px;
+  border: 1.5px solid var(--border); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--surface);
+  transition: background 0.15s, border-color 0.15s;
+}
+.sidebar__switchbox svg { width: 10px; height: 10px; opacity: 0; transition: opacity 0.15s; }
+.sidebar__switch input:checked + .sidebar__switchbox {
+  background: var(--accent); border-color: var(--accent);
+}
+.sidebar__switch input:checked + .sidebar__switchbox svg { opacity: 1; }
+.sidebar__switch em {
+  display: block; margin-top: 2px;
+  font-style: normal; font-size: 10.5px; color: var(--text-mute); line-height: 1.4;
+}
 
 .sidebar__scroll {
   flex: 1; overflow-y: auto; min-height: 0;

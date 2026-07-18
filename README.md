@@ -1,14 +1,55 @@
-# Yizzy — EV Infrastructure Intelligence
+# Yizzy — The Ownership Engine for India's Gig Economy
 
-A map-first platform that aggregates India's fragmented EV charging infrastructure —
-across every operator and fleet network — into a single, verifiable source of truth.
+A single portal with two routes, built to land the pitch for two audiences at once —
+gig drivers evaluating the switch to an EV, and banks/investors evaluating the model.
 
-Built to work two ways: as an **investor/pitch tool** (the "we've unified the market"
-story is legible in three seconds) and as an **operational tool** (find, filter and
-inspect stations by city, vehicle class, operator, access and data confidence).
+| Route | What it is |
+|---|---|
+| `/` | **Landing page** — the pitch: hero, the end-to-end driver journey as a flowchart, an interactive earnings calculator, and market context. |
+| `/infra-map` | **EV Charging Infra Map** — 192 verified Hyderabad stations across 51 operators, filterable and inspectable. |
+
+Both share one header and nav — this is one product, not two sites.
+
+## The four things Yizzy does
+
+1. **Financing** — fuel vehicle to EV at zero upfront. Repayment capacity is scored from
+   the driver's own bank statements via India's RBI-regulated Account Aggregator
+   framework, not traditional loan paperwork.
+2. **Efficiency optimization** — the app tracks earnings and rides, then optimizes routing
+   and timing. Target: up to 15% more earnings from the same hours.
+3. **B2B demand network** — logistics and corporate-transport partnerships give drivers
+   extra paid gigs in spare hours.
+4. **Battery buyback** — up to 50% of the old battery's value credited toward the
+   replacement.
+
+## Earnings calculator
+
+Fully client-side. Standard reducing-balance EMI, a 26-day working month, and per-tab
+editable inputs for Bike / Auto / Cab. The seeded defaults are the supplied bottom-up
+figures and are **not** to be changed without asking — they live in
+`src/features/landing/calculator/model.ts`.
+
+With those defaults, all three vehicle classes clear their EMI:
+
+| | Extra monthly profit | Monthly EMI | Left over |
+|---|---|---|---|
+| Bike | ₹6,370 | ₹3,384 | ₹2,986 |
+| Auto | ₹12,480 | ₹9,492 | ₹2,988 |
+| Cab | ₹29,250 | ₹27,552 | ₹1,698 |
+
+One deliberate deviation from the brief: the stacked cost bars are scaled to *actual*
+revenue rather than forced to equal heights. Revenue is identical for Bike (₹1,500 both)
+but differs for Auto (₹2,500 vs ₹2,300) and Cab (₹4,000 vs ₹3,800) in the supplied
+numbers, so equal-height bars would misstate the inputs. The caption adapts to say which
+case you're looking at.
+
+## Charging infra map
 
 Current coverage: **Hyderabad — 192 stations, 51 operators**. The architecture is
 pan-India by design: adding a city is a data import, not a code change.
+
+> **Note:** the dataset does not contain `rating` or `review count`, so station popups
+> omit them. Every other documented field is present and surfaced.
 
 ---
 
@@ -72,8 +113,17 @@ field data contradicts.
 ```
 scripts/etl/build_dataset.py   ETL: raw spreadsheet -> normalized JSON (the source of truth)
 public/data/*.json             stations.json + derived meta.json (counts, bounds, city list)
+vercel.json                    SPA rewrite — without it /infra-map 404s on refresh
 
 src/
+  brand.css                    design tokens: asphalt/paper/marigold/teal/coral, type scale
+  landing.css                  landing-page styles
+  styles.css                   map-route styles (scoped; must not set global body rules)
+  App.tsx                      router + shared shell
+  components/                  SiteHeader, SiteFooter, ScrollToTop
+  pages/                       LandingPage, MapPage
+  features/landing/            Hero, HowItWorks (flowchart), MarketStats
+  features/landing/calculator/ model.ts (EMI + defaults), Calculator, CostBars
   config/
     zones.ts                   EDITABLE Hyderabad activity zones (polygons + tiers)
     evReference.ts             EDITABLE EV-population estimates (city + per-zone shares)
