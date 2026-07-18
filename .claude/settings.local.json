@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"/Users/arvind/Downloads/Yizzy EV Data.xlsx\" && ls -la /Users/arvind/Desktop/Yizzy/)",
+      "Bash(python3 -c \"import pandas, openpyxl; print\\(pandas.__version__, openpyxl.__version__\\)\")",
+      "Bash(python3 -m venv venv)",
+      "Bash(./venv/bin/pip install *)",
+      "Bash(./venv/bin/python inspect.py)",
+      "Bash(mv inspect.py probe_data.py)",
+      "Bash(rm -rf __pycache__)",
+      "Bash(./venv/bin/python probe_data.py)",
+      "Bash(./venv/bin/python probe2.py)",
+      "Bash(npm create *)",
+      "Bash(npx --yes create-vite@latest yizzy-tmp --template react-ts)",
+      "Bash(mv yizzy-tmp/* yizzy-tmp/.gitignore . 2>/dev/null; rmdir yizzy-tmp; rm -rf src/assets src/App.css src/index.css src/App.tsx public/vite.svg; ls -a && echo \"--- src:\" && ls src)",
+      "Bash(npm install *)",
+      "Bash(node -e \"const p=require\\('./package.json'\\);console.log\\(JSON.stringify\\(p.dependencies,null,1\\)\\)\")",
+      "Bash(mkdir -p data/raw scripts/etl public/data src/lib/data src/features/map src/features/filters src/features/detail src/features/stats src/features/dashboard src/components && cp \"/Users/arvind/Downloads/Yizzy EV Data.xlsx\" data/raw/ && ls data/raw)",
+      "Bash(/private/tmp/claude-501/-Users-arvind-Desktop-Yizzy/90702d0d-129f-4783-880a-e89e40f08304/scratchpad/venv/bin/python scripts/etl/build_dataset.py)",
+      "Bash(npx tsc *)",
+      "Bash(timeout 120 npx vite build)",
+      "Bash(npx vite *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:49448/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:49448/data/meta.json)",
+      "Bash(echo \"TSC EXIT: $?\")",
+      "Bash(./venv/bin/python probe3.py)",
+      "Bash(node -e \"const s=require\\('./public/data/stations.json'\\); console.log\\('total',s.length\\); console.log\\(JSON.stringify\\(s[0],null,1\\)\\); const lt={}; s.forEach\\(x=>lt[x.linkType]=\\(lt[x.linkType]||0\\)+1\\); console.log\\('linkType:',lt\\); console.log\\('links present:', s.filter\\(x=>x.googleMapsLink\\).length\\);\")",
+      "Bash(echo \"EXIT: $?\")"
+    ]
+  }
+}
