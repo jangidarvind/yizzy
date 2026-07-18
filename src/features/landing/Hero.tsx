@@ -14,7 +14,7 @@ export function Hero() {
         <ul className="hero__lines">
           <li>Zero upfront to own the EV.</li>
           <li>A platform that keeps you earning more — up to 1.5x.</li>
-          <li>A partner that doesn't disappear after the loan.</li>
+          <li>Extra paid gigs in the hours you're free.</li>
         </ul>
 
         <button className="btn btn--primary hero__cta" onClick={toCalculator}>
