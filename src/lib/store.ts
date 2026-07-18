@@ -23,7 +23,10 @@ function readTheme(): Theme {
 }
 
 export interface Filters {
-  vehicles: VehicleFilter[];
+  // Values are the VehicleFilter union ('2W'|'3W'|'4W'|'Unconfirmed') but stored
+  // as string[] so the generic facet read/write paths stay uniform; validated on
+  // use in applyFilters.
+  vehicles: string[];
   cities: string[];
   areas: string[];
   operators: string[];

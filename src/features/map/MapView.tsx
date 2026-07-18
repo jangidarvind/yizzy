@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import maplibregl, { type GeoJSONSource, type LngLatBoundsLike } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import type { Dataset, Station } from '../../lib/data/types';
-import { applyFilters, colorKeyFor, useStore } from '../../lib/store';
+import { colorKeyFor, useStore } from '../../lib/store';
 import {
   MARKER_STROKE_FLAG, MARKER_STROKE_MULTI_DARK, MARKER_STROKE_MULTI_LIGHT,
   OPERATOR_OTHER_COLOR, VEHICLE_COLORS,

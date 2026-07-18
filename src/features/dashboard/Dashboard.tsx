@@ -146,7 +146,7 @@ export function Dashboard({ dataset, visible, zoneStats }: Props) {
                 />
                 <Tooltip {...TOOLTIP} />
                 <Bar dataKey="value" radius={[0, 3, 3, 0]} barSize={11} label={BAR_LABEL}
-                  onClick={(d: { name: string }) => toggleFacet('operators', d.name)}
+                  onClick={(d: { name?: string }) => d.name && toggleFacet('operators', d.name)}
                   className="dash__bar">
                   {data.operators.map((d) => (
                     <Cell key={d.name} fill={opColors[d.name] ?? OPERATOR_OTHER_COLOR} />
@@ -165,9 +165,9 @@ export function Dashboard({ dataset, visible, zoneStats }: Props) {
                     tickFormatter={(v: string) => VEHICLE_LABELS[v as VehicleTag] ?? v} />
                   <YAxis hide />
                   <Tooltip {...TOOLTIP}
-                    labelFormatter={(v: string) => VEHICLE_LABELS[v as VehicleTag] ?? v} />
+                    labelFormatter={(v) => VEHICLE_LABELS[String(v) as VehicleTag] ?? String(v)} />
                   <Bar dataKey="value" radius={[3, 3, 0, 0]} maxBarSize={54} label={BAR_LABEL_TOP}
-                    onClick={(d: { name: string }) => toggleFacet('vehicles', d.name)}
+                    onClick={(d: { name?: string }) => d.name && toggleFacet('vehicles', d.name)}
                     className="dash__bar">
                     {data.vehicles.map((d) => (
                       <Cell key={d.name} fill={VEHICLE_COLORS[d.name as VehicleTag] ?? VEHICLE_COLORS.Unconfirmed} />
@@ -210,7 +210,7 @@ export function Dashboard({ dataset, visible, zoneStats }: Props) {
                 <Tooltip {...TOOLTIP} />
                 <Bar dataKey="value" radius={[0, 3, 3, 0]} barSize={11} fill="#00E08F"
                   label={BAR_LABEL}
-                  onClick={(d: { name: string }) => toggleFacet('areas', d.name)}
+                  onClick={(d: { name?: string }) => d.name && toggleFacet('areas', d.name)}
                   className="dash__bar" />
               </BarChart>
             </ResponsiveContainer>

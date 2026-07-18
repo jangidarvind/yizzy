@@ -25,7 +25,10 @@
       "Bash(echo \"TSC EXIT: $?\")",
       "Bash(./venv/bin/python probe3.py)",
       "Bash(node -e \"const s=require\\('./public/data/stations.json'\\); console.log\\('total',s.length\\); console.log\\(JSON.stringify\\(s[0],null,1\\)\\); const lt={}; s.forEach\\(x=>lt[x.linkType]=\\(lt[x.linkType]||0\\)+1\\); console.log\\('linkType:',lt\\); console.log\\('links present:', s.filter\\(x=>x.googleMapsLink\\).length\\);\")",
-      "Bash(echo \"EXIT: $?\")"
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(npm run *)",
+      "Bash(echo \"BUILD EXIT CODE: $?\")",
+      "Read(//tmp/**)"
     ]
   }
 }
