@@ -45,11 +45,25 @@ case you're looking at.
 
 ## Charging infra map
 
-Current coverage: **Hyderabad — 192 stations, 51 operators**. The architecture is
-pan-India by design: adding a city is a data import, not a code change.
+Current coverage: **306 stations, 66 operators, 2 cities** — Hyderabad (192) and
+Noida / Greater Noida (114). Adding a city is a data import, not a code change:
+both were merged by dropping the file into `data/raw/` and re-running the ETL, with
+no frontend change.
 
 > **Note:** the dataset does not contain `rating` or `review count`, so station popups
 > omit them. Every other documented field is present and surfaced.
+
+**Pin precision.** `Link_Type` distinguishes charger-precise records from ones the
+source flags as building-level (coordinates are the society/tower, not the bay —
+mostly operator-locator sourced). The detail panel labels these "building-level pin"
+rather than "verified place", so an approximate marker never reads as exact.
+
+**EV estimates are per city.** `EV_REFERENCE.byCity` in `src/config/evReference.ts` is
+keyed by the dataset's `City` value, and the demand-vs-supply ratio only counts
+stations in cities that have an estimate. This is deliberate: dividing one city's EV
+demand by another city's station supply would silently deflate the headline figure the
+moment a new city is imported. Noida currently has stations but no fleet estimate, so
+it is excluded from the ratio and called out in the UI. Add a `Noida` entry to include it.
 
 ---
 

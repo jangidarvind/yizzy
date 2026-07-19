@@ -18,6 +18,9 @@
  * layer / traffic API for genuine congestion data. Out of scope for now.
  */
 
+/** The city these zone polygons describe — used to pick the right EV estimate. */
+export const ZONES_CITY = 'Hyderabad';
+
 export interface Zone {
   id: string;
   name: string;

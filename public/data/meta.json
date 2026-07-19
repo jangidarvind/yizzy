@@ -1,19 +1,19 @@
 {
-  "generatedAt": "2026-07-18T04:38:12.209451+00:00",
+  "generatedAt": "2026-07-19T08:47:41.464289+00:00",
   "totals": {
-    "stations": 192,
-    "operators": 51,
-    "cities": 1,
-    "areas": 88
+    "stations": 306,
+    "operators": 66,
+    "cities": 2,
+    "areas": 143
   },
   "bounds": [
     [
-      78.231532,
+      77.3099897,
       17.24408
     ],
     [
       78.585485,
-      17.646226
+      28.6999424
     ]
   ],
   "cities": [
@@ -31,59 +31,89 @@
           17.646226
         ]
       ]
+    },
+    {
+      "name": "Noida",
+      "stationCount": 114,
+      "operatorCount": 30,
+      "bounds": [
+        [
+          77.3099897,
+          28.4262739
+        ],
+        [
+          77.5365167,
+          28.6999424
+        ]
+      ]
     }
   ],
   "vehicleCounts": {
-    "2W": 40,
-    "3W": 5,
-    "4W": 110,
-    "Unconfirmed": 47
+    "2W": 59,
+    "3W": 10,
+    "4W": 195,
+    "Unconfirmed": 59
   },
   "operatorCounts": {
-    "Tata Power": 20,
+    "Statiq": 38,
+    "Tata Power": 33,
+    "Ather Grid": 20,
+    "ElectricPe": 18,
     "BPCL": 17,
-    "ElectricPe": 17,
-    "Bolt.Earth": 14,
-    "Ather Grid": 13,
-    "GLIDA": 11,
+    "Bolt.Earth": 17,
+    "Unbranded/Generic": 15,
+    "GLIDA": 13,
     "ThunderPlus": 11,
-    "Unbranded/Generic": 11,
-    "Kazam": 8,
-    "Statiq": 6,
-    "ChargeZone": 4,
-    "EVRE": 4,
+    "Kazam": 10,
+    "Jio-BP Pulse": 8,
+    "Reliable Charge": 8,
+    "BMW (OEM)": 6,
+    "ChargeZone": 6,
+    "EVRE": 6,
+    "Battery Smart": 5,
+    "Mercedes-Benz (OEM)": 4,
+    "Sonik Mobility": 4,
+    "E-Fill": 3,
     "ElectricFuel": 3,
-    "Jio-BP Pulse": 3,
-    "Mercedes-Benz (OEM)": 3,
     "Nihaan Energy": 3,
     "Zeon": 3,
     "eMobility": 3,
-    "BMW (OEM)": 2,
+    "Adani": 2,
     "ChargeMOD": 2,
+    "EESL (Govt of India)": 2,
+    "Evnergy Solutions": 2,
     "Fortum": 2,
+    "HPCL": 2,
     "LionCharge": 2,
     "Relux": 2,
+    "Terra Charge": 2,
     "ABB E-Mobility": 1,
     "Bharat Charge": 1,
     "Charge & Drive": 1,
     "Charge & Drive (Fortum)": 1,
     "ChargeZone (OEM co-brand)": 1,
+    "Chargze": 1,
     "CharzNeT": 1,
-    "E-Fill": 1,
     "EV Dock": 1,
     "Electrik Mobility": 1,
+    "Exicom": 1,
     "Famous Battery": 1,
     "FleetCharge": 1,
+    "Fortum (via Statiq network)": 1,
     "GoEC": 1,
+    "Hero Electric (OEM)": 1,
     "Hero Vida (OEM)": 1,
     "Hyundai (OEM)": 1,
     "Kia (OEM)": 1,
     "Lectrix (OEM Swap Network)": 1,
+    "Log9": 1,
     "Mahindra (OEM, at IOC)": 1,
+    "Okaya": 1,
     "Pi EV Solutions": 1,
     "Powerbank": 1,
     "Recharge Mobility": 1,
-    "Reliable Charge": 1,
+    "Statiq (at BPCL office)": 1,
+    "Sun Mobility": 1,
     "TGREDCO (Telangana State Govt)": 1,
     "Unbranded/Generic (Government)": 1,
     "Unbranded/Generic (Metro-linked)": 1,
@@ -93,34 +123,35 @@
     "eDrive": 1
   },
   "ownershipCounts": {
-    "Private Network": 122,
-    "OEM Network": 25,
-    "PSU / Oil Company": 20,
-    "Utility / Semi-Public": 20,
-    "Public Authority": 3,
-    "Government": 2
+    "Private Network": 201,
+    "OEM Network": 38,
+    "Utility / Semi-Public": 33,
+    "PSU / Oil Company": 27,
+    "Government": 4,
+    "Public Authority": 3
   },
   "chargerTypeCounts": {
-    "AC+DC": 103,
-    "DC Fast": 47,
-    "AC": 37,
-    "Battery Swap": 3,
+    "AC+DC": 159,
+    "DC Fast": 72,
+    "AC": 64,
+    "Battery Swap": 9,
     "Unknown": 2
   },
   "accessCounts": {
-    "Public": 176,
-    "Restricted": 9,
-    "Semi-public": 5,
-    "Not available": 2
+    "Public": 275,
+    "Restricted": 15,
+    "Semi-public": 11,
+    "Not available": 3,
+    "Unknown": 2
   },
   "confidenceCounts": {
-    "High": 97,
-    "Medium": 52,
-    "Low": 43
+    "High": 157,
+    "Medium": 94,
+    "Low": 55
   },
   "flagCounts": {
-    "reported-nonfunctional": 17,
-    "falsely-listed-public": 4,
-    "closed": 2
+    "reported-nonfunctional": 22,
+    "falsely-listed-public": 6,
+    "closed": 3
   }
 }

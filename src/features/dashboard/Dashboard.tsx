@@ -95,9 +95,18 @@ export function Dashboard({ dataset, visible, zoneStats }: Props) {
                   <span className="est-tag">estimated</span>
                 </div>
                 <p>
-                  City-wide, roughly <strong>one charging station per {cityRatio.vehiclesPerStation.toLocaleString('en-IN')} EVs</strong> —
+                  In {cityRatio.coveredCities.join(' & ') || 'covered cities'}, roughly{' '}
+                  <strong>one charging station per {cityRatio.vehiclesPerStation.toLocaleString('en-IN')} EVs</strong> —
                   an estimated {cityRatio.totalEv.toLocaleString('en-IN')} EVs against {cityRatio.totalStations.toLocaleString('en-IN')} stations.
                 </p>
+                {cityRatio.awaitingCities.length > 0 && (
+                  <p className="dash__note">
+                    {cityRatio.awaitingCities.join(', ')} {cityRatio.awaitingCities.length === 1 ? 'is' : 'are'} on
+                    the map but excluded from this ratio — no EV fleet estimate supplied yet.
+                    Add {cityRatio.awaitingCities.length === 1 ? 'it' : 'them'} in{' '}
+                    <code>src/config/evReference.ts</code> to include {cityRatio.awaitingCities.length === 1 ? 'it' : 'them'}.
+                  </p>
+                )}
                 <div className="dash__evinfra-classes">
                   {cityRatio.perClass.map((c) => (
                     <div key={c.cls}>

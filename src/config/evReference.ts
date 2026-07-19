@@ -14,15 +14,26 @@
  * station-count fallback.
  */
 
+export interface EvFleet {
+  '2W': number;
+  '3W': number;
+  '4W': number;
+}
+
 export interface EvEstimate {
   /** Human note on where the numbers came from — shown as a source caption. */
   source: string;
   asOf: string;
-  cityWide: {
-    '2W': number;
-    '3W': number;
-    '4W': number;
-  };
+  /**
+   * Estimated EV fleet per city, keyed by the `City` value in the dataset.
+   *
+   * Keyed by city on purpose: the ratio must only ever divide a city's EV
+   * demand by that same city's station supply. Adding a new city's stations
+   * without adding its EV estimate would otherwise silently deflate the
+   * headline "vehicles per station" figure. Cities absent from this map are
+   * excluded from the ratio and reported as awaiting data.
+   */
+  byCity: Record<string, EvFleet>;
   /** Optional per-zone fleet distribution, keyed by zone id. */
   zoneShare: Record<string, { '2W': number; '3W': number; '4W': number }> | null;
 }
@@ -30,12 +41,15 @@ export interface EvEstimate {
 export const EV_REFERENCE: EvEstimate = {
   source: 'Internal estimate — placeholder pending Telangana RTA / VAHAN figures',
   asOf: '2026',
-  // Order-of-magnitude placeholders for Hyderabad's EV fleet by class.
-  // EDIT THESE with real figures when available.
-  cityWide: {
-    '2W': 210_000, // EV two-wheelers (bikes/scooters)
-    '3W': 48_000, //  EV autos
-    '4W': 32_000, //  EV cars/cabs
+  // Order-of-magnitude placeholders by city. EDIT with real figures when available.
+  // NOTE: Noida stations are in the dataset but have no EV estimate yet, so Noida
+  // is deliberately absent here rather than guessed.
+  byCity: {
+    Hyderabad: {
+      '2W': 210_000, // EV two-wheelers (bikes/scooters)
+      '3W': 48_000, //  EV autos
+      '4W': 32_000, //  EV cars/cabs
+    },
   },
   // Per-zone share of the city EV fleet, by class (each class's column sums to
   // ~1 across zones). This is EDITABLE ESTIMATE data — it must be independent of

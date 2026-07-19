@@ -1,6 +1,17 @@
 import type { Station } from './data/types';
-import { HYDERABAD_ZONES, type Zone } from '../config/zones';
-import { EV_REFERENCE, VEHICLE_CLASS_ORDER } from '../config/evReference';
+import { HYDERABAD_ZONES, ZONES_CITY, type Zone } from '../config/zones';
+import { EV_REFERENCE, VEHICLE_CLASS_ORDER, type EvFleet } from '../config/evReference';
+
+const EMPTY_FLEET: EvFleet = { '2W': 0, '3W': 0, '4W': 0 };
+
+/** EV estimate for a city, or zeroes if we don't have one yet. */
+export function fleetForCity(city: string): EvFleet {
+  return EV_REFERENCE.byCity[city] ?? EMPTY_FLEET;
+}
+
+export function hasEvEstimate(city: string): boolean {
+  return city in EV_REFERENCE.byCity;
+}
 
 /** Ray-casting point-in-polygon. `point` and ring vertices are [lon, lat]. */
 export function pointInPolygon(point: [number, number], ring: [number, number][]): boolean {
@@ -61,14 +72,17 @@ export interface ZoneStats {
  * total stations when no explicit split is configured.
  */
 export function computeZoneStats(stations: Station[]): ZoneStats[] {
+  // Zones describe one city; stations elsewhere are simply out of scope here.
+  const inScope = stations.filter((s) => s.city === ZONES_CITY);
+
   const buckets = new Map<string, Station[]>();
   for (const zone of HYDERABAD_ZONES) buckets.set(zone.id, []);
-  for (const s of stations) {
+  for (const s of inScope) {
     const zone = zoneForStation(s);
     if (zone) buckets.get(zone.id)!.push(s);
   }
 
-  const totalStations = stations.length || 1;
+  const totalStations = inScope.length || 1;
 
   const raw = HYDERABAD_ZONES.map((zone) => {
     const members = buckets.get(zone.id)!;
@@ -85,11 +99,12 @@ export function computeZoneStats(stations: Station[]): ZoneStats[] {
     // (independent of stations, so ratios genuinely differ); fall back to the
     // zone's station share only if no split is configured.
     const stationShare = members.length / totalStations;
+    const cityFleet = fleetForCity(ZONES_CITY);
     const ev = { '2W': 0, '3W': 0, '4W': 0, total: 0 };
     for (const cls of VEHICLE_CLASS_ORDER) {
       const configuredShare = EV_REFERENCE.zoneShare?.[zone.id]?.[cls];
       const fraction = configuredShare ?? stationShare;
-      ev[cls] = Math.round(EV_REFERENCE.cityWide[cls] * fraction);
+      ev[cls] = Math.round(cityFleet[cls] * fraction);
       ev.total += ev[cls];
     }
 
@@ -113,19 +128,43 @@ export function computeZoneStats(stations: Station[]): ZoneStats[] {
   return raw;
 }
 
-/** City-wide EV-vs-infrastructure summary (used when no zone is selected). */
+/**
+ * EV-vs-infrastructure summary across the cities we hold EV estimates for.
+ *
+ * Only stations in those cities are counted. Dividing one city's EV demand by
+ * another city's station supply would understate the ratio the moment a new
+ * city is imported without its fleet figures — which is exactly what adding
+ * Noida would otherwise have done.
+ */
 export function computeCityRatio(stations: Station[]) {
-  const totalEv =
-    EV_REFERENCE.cityWide['2W'] + EV_REFERENCE.cityWide['3W'] + EV_REFERENCE.cityWide['4W'];
+  const covered = stations.filter((s) => hasEvEstimate(s.city));
+  const coveredCities = [...new Set(covered.map((s) => s.city))].sort();
+  // Cities present on the map but with no EV estimate yet.
+  const awaitingCities = [...new Set(
+    stations.filter((s) => !hasEvEstimate(s.city)).map((s) => s.city),
+  )].sort();
+
+  const fleet = coveredCities.reduce<EvFleet>(
+    (acc, city) => {
+      const f = fleetForCity(city);
+      return { '2W': acc['2W'] + f['2W'], '3W': acc['3W'] + f['3W'], '4W': acc['4W'] + f['4W'] };
+    },
+    { ...EMPTY_FLEET },
+  );
+
+  const totalEv = fleet['2W'] + fleet['3W'] + fleet['4W'];
   const perClass = VEHICLE_CLASS_ORDER.map((cls) => ({
     cls,
-    ev: EV_REFERENCE.cityWide[cls],
-    stations: stations.filter((s) => s.vehicleTags.includes(cls)).length,
+    ev: fleet[cls],
+    stations: covered.filter((s) => s.vehicleTags.includes(cls)).length,
   }));
+
   return {
     totalEv,
-    totalStations: stations.length,
-    vehiclesPerStation: stations.length ? Math.round(totalEv / stations.length) : 0,
+    totalStations: covered.length,
+    vehiclesPerStation: covered.length ? Math.round(totalEv / covered.length) : 0,
     perClass,
+    coveredCities,
+    awaitingCities,
   };
 }
