@@ -14,6 +14,15 @@ export type VehicleFilter = VehicleTag | 'Unconfirmed';
 export type Theme = 'light' | 'dark';
 export type MapStyle = 'roadmap' | 'satellite';
 
+export interface UserLocation {
+  /** GeoJSON order: [longitude, latitude] */
+  coordinates: [number, number];
+  /** Reported accuracy radius in metres. */
+  accuracy: number;
+}
+
+export type GeoStatus = 'idle' | 'locating' | 'granted' | 'denied' | 'unavailable';
+
 const THEME_KEY = 'yizzy.theme';
 
 /** Persisted across sessions; defaults to Light per product spec. */
@@ -62,6 +71,10 @@ interface AppState {
   mapStyle: MapStyle;
   /** Hide stations flagged restricted / non-functional / access-denied. */
   hideRestricted: boolean;
+  /** Where the visitor is, once they've granted permission. */
+  userLocation: UserLocation | null;
+  /** Why we have no location: not asked yet, refused, or the lookup failed. */
+  geoStatus: GeoStatus;
   selectedId: string | null;
   selectedZoneId: string | null;
   hoveredId: string | null;
@@ -76,6 +89,8 @@ interface AppState {
   toggleTheme: () => void;
   setMapStyle: (s: MapStyle) => void;
   setHideRestricted: (v: boolean) => void;
+  setUserLocation: (loc: UserLocation | null) => void;
+  setGeoStatus: (s: GeoStatus) => void;
   select: (id: string | null) => void;
   selectZone: (id: string | null) => void;
   hover: (id: string | null) => void;
@@ -137,6 +152,8 @@ export const useStore = create<AppState>((set, get) => {
     theme: readTheme(),
     mapStyle: 'roadmap',
     hideRestricted: false,
+    userLocation: null,
+    geoStatus: 'idle',
     selectedId: null,
     selectedZoneId: null,
     hoveredId: null,
@@ -163,6 +180,8 @@ export const useStore = create<AppState>((set, get) => {
     toggleTheme: () => get().setTheme(get().theme === 'light' ? 'dark' : 'light'),
     setMapStyle: (mapStyle) => { set({ mapStyle }); sync(); },
     setHideRestricted: (hideRestricted) => set({ hideRestricted }),
+    setUserLocation: (userLocation) => set({ userLocation }),
+    setGeoStatus: (geoStatus) => set({ geoStatus }),
     // Selecting a zone and a station are mutually exclusive right-panel states.
     select: (selectedId) => { set({ selectedId, selectedZoneId: null }); sync(); },
     selectZone: (selectedZoneId) => { set({ selectedZoneId, selectedId: null }); sync(); },

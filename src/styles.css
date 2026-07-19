@@ -734,6 +734,90 @@
   font-variant-numeric: tabular-nums;
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
 }
+.panel__verified { color: var(--accent); }
+/* Building-level pins are approximate by the source's own admission. */
+.panel__approx { color: var(--text-mute); font-style: italic; }
+
+/* --- "You are here" ------------------------------------------------------
+   Deliberately violet: the marker palette already spends amber on 2W, teal on
+   3W, blue on 4W and slate on unconfirmed, so the default blue user dot would
+   read as a 4W station. Violet is outside that set, and the white ring plus
+   halo make the form unmistakable regardless of colour. */
+
+.maplibregl-user-location-dot,
+.maplibregl-user-location-dot::before {
+  background-color: #7C3AED !important;
+}
+.maplibregl-user-location-dot::after {
+  border: 2.5px solid #fff !important;
+  box-shadow: 0 0 4px rgba(24, 26, 32, 0.45) !important;
+}
+:root[data-map-theme='dark'] .maplibregl-user-location-dot,
+:root[data-map-theme='dark'] .maplibregl-user-location-dot::before {
+  background-color: #A78BFA !important;
+}
+.maplibregl-user-location-accuracy-circle {
+  background-color: rgba(124, 58, 237, 0.16) !important;
+}
+
+/* --- Nearby / coverage notice -------------------------------------------- */
+
+.nearby {
+  position: absolute; top: 12px; left: 50%; z-index: 22;
+  transform: translateX(-50%);
+  display: flex; align-items: flex-start; gap: 9px;
+  max-width: min(440px, calc(100vw - 32px));
+  padding: 10px 12px;
+  background: var(--overlay-strong);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--overlay-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  font-size: 12.5px; line-height: 1.4;
+  animation: nearby-in 0.3s var(--ease-out);
+}
+@keyframes nearby-in {
+  from { opacity: 0; transform: translate(-50%, -8px); }
+}
+/* Slide clear of the filter rail / detail panel on wide screens. */
+.sidebar-open .nearby { transform: translateX(calc(-50% + 150px)); }
+.panel-open .nearby { transform: translateX(calc(-50% - 150px)); }
+.sidebar-open.panel-open .nearby { transform: translateX(-50%); }
+
+.nearby svg { flex: 0 0 auto; margin-top: 1px; }
+.nearby span { flex: 1; min-width: 0; }
+.nearby em {
+  display: block; font-style: normal;
+  color: var(--text-mute); font-size: 11.5px; margin-top: 1px;
+}
+.nearby--near { color: #7C3AED; }
+.nearby--far { color: var(--danger); }
+.nearby--muted { color: var(--text-mute); }
+.nearby--near span, .nearby--far span, .nearby--muted span { color: var(--text); }
+
+.nearby__go {
+  flex: 0 0 auto; align-self: center;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: transparent; color: var(--text-dim);
+  font-size: 11.5px; padding: 5px 10px;
+  transition: color 0.16s, border-color 0.16s;
+}
+.nearby__go:hover { color: var(--accent); border-color: var(--accent-dim); }
+
+@media (max-width: 720px) {
+  .nearby, .sidebar-open .nearby, .panel-open .nearby { transform: translateX(-50%); }
+  .nearby { top: 8px; font-size: 12px; }
+}
+
+/* Distance-from-you chip in the station panel. */
+.panel__dist {
+  display: inline-block; margin-bottom: 6px;
+  font-size: 11px; font-weight: 600;
+  color: #7C3AED; background: rgba(124, 58, 237, 0.12);
+  border: 1px solid rgba(124, 58, 237, 0.28);
+  padding: 2px 7px; border-radius: 5px;
+}
+:root[data-map-theme='dark'] .panel__dist { color: #C4B5FD; }
 .panel__link {
   font-size: 11.5px; color: var(--text-dim); text-decoration: none;
   padding: 4px 8px; border-radius: 5px;

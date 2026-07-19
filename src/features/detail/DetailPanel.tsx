@@ -3,6 +3,7 @@ import type { Station } from '../../lib/data/types';
 import { VEHICLE_LABELS } from '../../lib/data/types';
 import { useStore } from '../../lib/store';
 import { ACCESS_COLORS, CONFIDENCE_COLORS, FLAG_LABELS, VEHICLE_COLORS } from '../../lib/theme';
+import { formatDistance, haversineKm } from '../../lib/geo';
 
 interface Props {
   station: Station | null;
@@ -15,6 +16,12 @@ interface Props {
 export function DetailPanel({ station }: Props) {
   const select = useStore((s) => s.select);
   const toggleFacet = useStore((s) => s.toggleFacet);
+  const userLocation = useStore((s) => s.userLocation);
+
+  // Straight-line, not driving distance — labelled as such in the tooltip.
+  const distanceKm = station && userLocation
+    ? haversineKm(userLocation.coordinates, station.coordinates)
+    : null;
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') select(null); };
@@ -45,6 +52,11 @@ export function DetailPanel({ station }: Props) {
                   strokeWidth="1.7" strokeLinecap="round" />
               </svg>
             </button>
+            {distanceKm !== null && (
+              <span className="panel__dist" title="Straight-line distance from your location">
+                {formatDistance(distanceKm)} from you
+              </span>
+            )}
             <button className="panel__loc" onClick={() => toggleFacet('areas', station.areaGroup)}>
               <svg viewBox="0 0 12 14" width="11" height="12" aria-hidden="true">
                 <path d="M6 13 C6 13 11 8.5 11 5.2 A5 5 0 0 0 1 5.2 C1 8.5 6 13 6 13 Z"
@@ -125,11 +137,7 @@ export function DetailPanel({ station }: Props) {
           <footer className="panel__foot">
             <div className="panel__coords">
               {station.coordinates[1].toFixed(5)}, {station.coordinates[0].toFixed(5)}
-              {station.linkType === 'exact place' && (
-                <span className="panel__verified" title="Opens Google's canonical pin for this place">
-                  · verified place
-                </span>
-              )}
+              <PinPrecision linkType={station.linkType} />
             </div>
             {/* The exact original Google Maps link — for place_id links this opens
                 Google's canonical business pin, not a reconstructed coordinate. */}
@@ -146,6 +154,36 @@ export function DetailPanel({ station }: Props) {
       )}
     </aside>
   );
+}
+
+/**
+ * Pin precision, straight from the source's own `Link_Type`.
+ *
+ * Some records (mostly operator-locator sourced) are explicitly flagged as
+ * building-level rather than charger-precise. Saying so is more useful than
+ * implying every pin is exact — the marker may be the society or tower, not
+ * the bay.
+ */
+function PinPrecision({ linkType }: { linkType: string }) {
+  const lt = linkType.toLowerCase();
+  if (lt.includes('building-level')) {
+    return (
+      <span
+        className="panel__approx"
+        title="Coordinates are the building or locality, not the exact charger bay"
+      >
+        · building-level pin
+      </span>
+    );
+  }
+  if (lt.startsWith('exact place')) {
+    return (
+      <span className="panel__verified" title="Opens Google's canonical pin for this place">
+        · verified place
+      </span>
+    );
+  }
+  return null;
 }
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {

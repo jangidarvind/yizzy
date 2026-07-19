@@ -12,6 +12,7 @@ import { basemapFor } from './basemaps';
 import { MapLegend } from './MapLegend';
 import { MapStyleControl } from './MapStyleControl';
 import { MapTooltip } from './MapTooltip';
+import { NearbyNotice } from './NearbyNotice';
 
 const STATION_SRC = 'stations';
 const FIT_PADDING = { top: 96, bottom: 64, left: 380, right: 96 };
@@ -33,6 +34,9 @@ export function MapView({ dataset, visible }: Props) {
   const mapStyle = useStore((s) => s.mapStyle);
   const select = useStore((s) => s.select);
   const selectedId = useStore((s) => s.selectedId);
+  const setUserLocation = useStore((s) => s.setUserLocation);
+  const setGeoStatus = useStore((s) => s.setGeoStatus);
+  const geolocateRef = useRef<maplibregl.GeolocateControl | null>(null);
 
   const opColors = useMemo(() => operatorColorMap(dataset.meta.operatorCounts), [dataset.meta]);
   const topOps = useMemo(() => new Set(topOperators(dataset.meta.operatorCounts)), [dataset.meta]);
@@ -132,6 +136,34 @@ export function MapView({ dataset, visible }: Props) {
     mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
 
+    /**
+     * "You are here", the way a map app should do it.
+     *
+     * MapLibre's own control is used rather than a hand-rolled marker: it draws a
+     * geodesically-correct accuracy circle, handles the active/background/error
+     * states, and is keyboard accessible. We mirror its position into the store so
+     * the legend and station panel can show distances.
+     */
+    const geolocate = new maplibregl.GeolocateControl({
+      positionOptions: { enableHighAccuracy: true, timeout: 10_000 },
+      trackUserLocation: true,
+      showUserLocation: true,
+      showAccuracyCircle: true,
+    });
+    geolocateRef.current = geolocate;
+    map.addControl(geolocate, 'top-right');
+
+    geolocate.on('geolocate', (e) => {
+      const p = (e as GeolocationPosition).coords;
+      setUserLocation({ coordinates: [p.longitude, p.latitude], accuracy: p.accuracy });
+      setGeoStatus('granted');
+    });
+    geolocate.on('error', (e) => {
+      // 1 = PERMISSION_DENIED; anything else is a lookup failure we can retry.
+      setGeoStatus((e as GeolocationPositionError)?.code === 1 ? 'denied' : 'unavailable');
+    });
+    geolocate.on('trackuserlocationend', () => setUserLocation(null));
+
     // Persistent handler: `style.load` fires on the initial load AND after every
     // setStyle (theme or satellite switch), which wipes custom layers. Re-adding
     // here — rather than via a per-switch once() — avoids a race when setStyle is
@@ -166,6 +198,40 @@ export function MapView({ dataset, visible }: Props) {
     map.setStyle(basemapFor(theme, mapStyle));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [styleKey, ready]);
+
+  /**
+   * Ask for location once the map is up, so the visitor lands on the stations
+   * around them instead of having to hunt.
+   *
+   * We check the Permissions API first: if location was already refused, firing
+   * `trigger()` only produces a no-op the browser suppresses anyway, and the
+   * control stays available for a manual retry. If it was already granted, this
+   * resolves silently with no prompt at all.
+   */
+  const askedRef = useRef(false);
+  useEffect(() => {
+    if (!ready || askedRef.current) return;
+    askedRef.current = true;
+
+    if (!('geolocation' in navigator)) { setGeoStatus('unavailable'); return; }
+
+    let cancelled = false;
+    const request = () => {
+      if (cancelled) return;
+      setGeoStatus('locating');
+      geolocateRef.current?.trigger();
+    };
+
+    navigator.permissions?.query({ name: 'geolocation' as PermissionName })
+      .then((status) => {
+        if (status.state === 'denied') { setGeoStatus('denied'); return; }
+        request();
+      })
+      // Permissions API is unavailable in some browsers — just ask directly.
+      .catch(request) ?? request();
+
+    return () => { cancelled = true; };
+  }, [ready, setGeoStatus]);
 
   // --- Hover tooltip -----------------------------------------------------
   useEffect(() => {
@@ -226,10 +292,19 @@ export function MapView({ dataset, visible }: Props) {
     prevSelected.current = selectedId;
   }, [selectedId, ready, byId]);
 
+  /** Fly to a station and open it — used by the "show nearest" affordance. */
+  const goToStation = (station: Station) => {
+    select(station.id);
+    mapRef.current?.easeTo({
+      center: station.coordinates, zoom: 14, offset: [-160, 0], duration: 1200,
+    });
+  };
+
   return (
     <div className="map-root">
       <div ref={containerRef} className="map-canvas" />
       {tooltip && <MapTooltip station={tooltip.station} x={tooltip.x} y={tooltip.y} />}
+      <NearbyNotice stations={visible} onGoTo={goToStation} />
       <div className="map-controls-br">
         <MapStyleControl />
         <MapLegend meta={dataset.meta} />
